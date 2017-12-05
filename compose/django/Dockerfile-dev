@@ -1,0 +1,19 @@
+FROM python:3
+MAINTAINER raccoony <raccoonyy@gmail.com>
+
+RUN \
+    apt-get update &&\
+    apt-get -y install \
+        libpq-dev \
+        python-dev
+
+WORKDIR /app
+
+ENV PYTHONUSERBASE=/usr/local/
+ENV PATH=${PYTHONUSERBASE}lib/python3.6/site-packages/bin:${PATH}
+ENV PYTHONUNBUFFERED=0
+
+ADD    ./manage.py                    /app/
+
+ADD    compose/django/start-dev.sh       /start-dev.sh
+RUN    chmod +x /*.sh
