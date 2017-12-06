@@ -1,4 +1,9 @@
-Django
-gunicorn
-psycopg2
-beautifulsoup4
+django==2.0
+djangorestframework==3.7.3
+django-rest-swagger==0.3.10
+gunicorn==19.7.1
+psycopg2==2.7.3.2
+beautifulsoup4==4.4.0
+requests==2.18.4
+markdown==2.6.9
+django-filter==2.0.0.dev1
