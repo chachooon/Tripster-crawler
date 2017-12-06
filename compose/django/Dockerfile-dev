@@ -8,11 +8,6 @@ RUN \
         python-dev
 
 WORKDIR /app
-
-ENV PYTHONUSERBASE=/usr/local/
-ENV PATH=${PYTHONUSERBASE}lib/python3.6/site-packages/bin:${PATH}
-ENV PYTHONUNBUFFERED=0
-
 ADD    ./manage.py                    /app/
 
 ADD    compose/django/start-dev.sh       /start-dev.sh

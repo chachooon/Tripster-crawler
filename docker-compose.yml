@@ -20,6 +20,35 @@ services:
       timeout: 1s
       retries: 10
 
+  httpbin:
+    image: vimagick/httpbin
+    restart: always
+    ports:
+      - "80"
+
+  selenium:
+    image: selenium/hub
+    depends_on:
+      httpbin:
+        condition: service_started
+    links:
+      - httpbin:httpbin
+    ports:
+      - "4444"
+
+#  phantomjs:
+#    build:
+#      context: .
+#      dockerfile: ./compose/phantomjs/Dockerfile
+#    depends_on:
+#      selenium:
+#        condition: service_started
+#      httpbin:
+#        condition: service_started
+#    links:
+#      - selenium:selenium
+#      - httpbin:httpbin
+
   django:
     build:
       context: .
@@ -37,11 +66,26 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      selenium:
+        condition: service_started
     links:
       - db:postgres
+      - selenium:selenium
     command: /start-dev.sh
     volumes:
+      - ./:/app/
       - ./manage.py:/app/manage.py
       - ./requirements.txt:/app/requirements.txt
       - ./djangosample:/app/djangosample
       - django_sample_packages:/usr/local/lib/python3.6/site-packages/
+
+#  tester:
+#    build:
+#      context: .
+#      dockerfile: ./compose/phantomjs
+#    command: py.phantomjs phantomjs.py
+#    depends_on:
+#      selenium:
+#        condition: service_started
+#      phantomjs:
+#        condition: service_started
