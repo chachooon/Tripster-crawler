@@ -9,6 +9,6 @@ class TripsterList(generics.ListCreateAPIView):
     serializer_class = TripsterSerializer
 
 # generics 에 상세, 수정, 삭제 API가 정의되어 있다
-class BbsDetail(generics.RetrieveUpdateDestroyAPIView):
+class TripsterDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Tripster.objects.all()
     serializer_class = TripsterSerializer
