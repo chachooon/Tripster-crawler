@@ -1,4 +1,3 @@
-# 클래스 기반의 Rest CRUD 처리
 from tripster.models import Tripster
 from tripster.serializers import TripsterSerializer
 from rest_framework import generics
@@ -12,3 +11,4 @@ class TripsterList(generics.ListCreateAPIView):
 class TripsterDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Tripster.objects.all()
     serializer_class = TripsterSerializer
+
