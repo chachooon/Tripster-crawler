@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 
 class Tripster(models.Model):
     created = models.DateTimeField(auto_now_add=True)
@@ -9,3 +10,10 @@ class Tripster(models.Model):
 
     class Meta:
         ordering = ('created',)
+
+# 수집한 데이터 json 형태로 저장
+class Rawdata(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    category = models.CharField(max_length=100)
+    list = JSONField()
+    detail = JSONField()
