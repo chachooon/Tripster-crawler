@@ -64,9 +64,3 @@ class Navermap():
                 detail=resultset['detail']
             )
             print('insert data : '+ str(++count))
-
-#
-# new = Navermap()
-# new.setdata('Navermap','DINING', 126.7, 37.4, 126.7, 37.4, 0.02)
-# new.insdata()
-#
