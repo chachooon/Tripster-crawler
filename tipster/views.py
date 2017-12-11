@@ -1,5 +1,5 @@
-from tipster.models import Tipster
-from tipster.serializers import TipsterSerializer
+from .models import Tipster
+from .serializer import TipsterSerializer
 from rest_framework import generics
 
 # generics 에 목록과 생성 API 가 정의되어 있다
