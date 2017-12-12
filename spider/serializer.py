@@ -10,7 +10,7 @@ class ReqNmapSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         Nmap = NmapRawScrapable()
-        Nmap.create()
+        Nmap.create(**validated_data)
         return ReqestHistory.objects.create(**validated_data)
 
 

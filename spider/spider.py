@@ -4,11 +4,14 @@ import requests, json
 
 class NmapRawScrapable():
 
-    def reqlist(self):
-        x=127
-        y=37
+    def reqlist(self,**kwargs):
         url = "http://map.naver.com/search2/interestSpot.nhn?"
         category = "DINING"
+        x= kwargs['x']
+        y= kwargs['y']
+        xy_max = kwargs['max']
+        xy_weight = kwargs['min']
+
         header = {
             'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
             'accept-encoding':'gzip, deflate, br',
@@ -17,11 +20,11 @@ class NmapRawScrapable():
             'upgrade-insecure-requests':'1',
             'user-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
         }
-        while x < x + 10:
-            while y < y + 10:
+        while x < x + xy_max:
+            while y < y + xy_max:
                 playload = {
                     'type': category,
-                    'boundary': str(x)+';'+str(y)+';'+str(x + 0.02)+';'+str(y + 0.02),
+                    'boundary': str(x)+';'+str(y)+';'+str(x + xy_weight)+';'+str(y + xy_weight),
                     'pageSize': '100'
                 }
                 req = requests.get(url, headers=header, params=playload)
@@ -29,11 +32,11 @@ class NmapRawScrapable():
                 for result in results:
                     yield result
 
-    def reqdata(self):
+    def reqdata(self, **kwargs):
         url = 'https://store.naver.com/restaurants/detail?'
         header = {
         }
-        for list in self.reqlist():
+        for list in self.reqlist(**kwargs):
             playload = {
                 'id': list['id'][1:]
             }
@@ -48,8 +51,8 @@ class NmapRawScrapable():
             }
             yield resultset
 
-    def create(self):
-        for resultset in self.reqdata():
+    def create(self,**kwargs):
+        for resultset in self.reqdata(**kwargs):
             NmapRaw.objects.create(
                 category=resultset['category'],
                 list=resultset['list'],
