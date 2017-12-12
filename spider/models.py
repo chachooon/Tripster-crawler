@@ -8,25 +8,18 @@ class Timestampable(models.Model):
     class Meta:
         abstract = True
 
-class ReqestHistory(Timestampable, models.Model):
+class ReqestData(Timestampable, models.Model):
     x = models.IntegerField()
     y = models.IntegerField()
-    xy_max = models.IntegerField(default=10)
-    xy_weight = models.IntegerField(default=0.02)
-
-class NmapRaw(Timestampable, models.Model):
-    category = models.CharField(max_length=100)
-    list = JSONField()
-    contents = JSONField()
+    max = models.IntegerField()
 
 class NmapList(Timestampable, models.Model):
-    id = models.IntegerField(primary_key=True)
+    nid = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=100)
     category = models.CharField(max_length=100)
-    x = models.IntegerField()
-    y = models.IntegerField()
-#
-#
-# class NmapDetail(Timestampable, models.Model):
-#     id = models.ForeignKey()
-#     contents = JSONField()
+    x = models.DecimalField(max_digits=10, decimal_places=7)
+    y = models.DecimalField(max_digits=10, decimal_places=7)
+
+class NmapContents(Timestampable, models.Model):
+    cid = models.IntegerField(null=True, blank=True)
+    contents = JSONField()

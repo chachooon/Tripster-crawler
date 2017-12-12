@@ -1,61 +1,58 @@
-from .models import NmapRaw
+from .models import NmapList, NmapContents
 from bs4 import BeautifulSoup
 import requests, json
 
-class NmapRawScrapable():
-
-    def reqlist(self,**kwargs):
+class NmapListScrapable():
+    def request(self,**kwargs):
         url = "http://map.naver.com/search2/interestSpot.nhn?"
         category = "DINING"
         x= kwargs['x']
         y= kwargs['y']
-        xy_max = kwargs['max']
-        xy_weight = kwargs['min']
+        max = kwargs['max']
 
         header = {
-            'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-            'accept-encoding':'gzip, deflate, br',
-            'accept-language':'ko,en-US;q=0.9,en;q=0.8,pt;q=0.7,la;q=0.6',
-            'cache-control':'max-age=0',
-            'upgrade-insecure-requests':'1',
             'user-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
         }
-        while x < x + xy_max:
-            while y < y + xy_max:
+        while x < x + max:
+            while y < y + max:
                 playload = {
                     'type': category,
-                    'boundary': str(x)+';'+str(y)+';'+str(x + xy_weight)+';'+str(y + xy_weight),
+                    'boundary': str(x+0.0000001)+';'+str(y+0.0000001)+';'+str(x + 0.02)+';'+str(y + 0.02),
                     'pageSize': '100'
                 }
                 req = requests.get(url, headers=header, params=playload)
+                r = req.json()
                 results = list(req.json()['result']['site'])
                 for result in results:
-                    yield result
+                    result = result
+                    NmapList.objects.create(
+                        nid = int(result['id'][1:]),
+                        name = result['name'],
+                        category = category,
+                        x = result['x'],
+                        y = result['y']
+                )
 
-    def reqdata(self, **kwargs):
+                    # detail = NmapContentsScrapable()
+                    # detail.create(instance)
+        return NmapList.objects.all()
+
+class NmapContentsScrapable():
+    def request(self, instance):
         url = 'https://store.naver.com/restaurants/detail?'
-        header = {
+        header = {}
+        playload = {
+            'id': instance.nid
         }
-        for list in self.reqlist(**kwargs):
-            playload = {
-                'id': list['id'][1:]
-            }
-            req = requests.get(url, headers=header, params=playload)
-            soup = BeautifulSoup(req.text, 'html.parser')
-            soup_parse = soup.footer.next_sibling.string.split('window.PLACE_STATE=')[1]
-            detail = json.loads(soup_parse)
-            resultset = {
-                'category': 'DINING',
-                'list': list,
-                'detail': detail
-            }
-            yield resultset
+        req = requests.get(url, headers=header, params=playload)
+        soup = BeautifulSoup(req.text, 'html.parser')
+        soup_parse = soup.footer.next_sibling.string.split('window.PLACE_STATE=')[1]
+        result = json.loads(soup_parse)
+        return result
 
-    def create(self,**kwargs):
-        for resultset in self.reqdata(**kwargs):
-            NmapRaw.objects.create(
-                category=resultset['category'],
-                list=resultset['list'],
-                contents=resultset['detail']
-            )
-        return NmapRaw.objects.all()
+    def create(self,instance):
+        result = self.request(instance)
+        NmapContents.objects.create(
+            cid = instance.cid,
+            contents = result
+        )
