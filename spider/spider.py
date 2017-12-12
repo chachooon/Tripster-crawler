@@ -7,27 +7,23 @@ class NmapRawScrapable():
     def reqlist(self,**kwargs):
         url = "http://map.naver.com/search2/interestSpot.nhn?"
         category = "DINING"
-        x= kwargs['x']
-        y= kwargs['y']
-        xy_max = kwargs['max']
-        xy_weight = kwargs['min']
+        x= 127
+        y= 37
+        max = kwargs['max']
+        min = kwargs['min']
 
         header = {
-            'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-            'accept-encoding':'gzip, deflate, br',
-            'accept-language':'ko,en-US;q=0.9,en;q=0.8,pt;q=0.7,la;q=0.6',
-            'cache-control':'max-age=0',
-            'upgrade-insecure-requests':'1',
             'user-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
         }
-        while x < x + xy_max:
-            while y < y + xy_max:
+        while x < x + 1:
+            while y < y + 1:
                 playload = {
                     'type': category,
-                    'boundary': str(x)+';'+str(y)+';'+str(x + xy_weight)+';'+str(y + xy_weight),
+                    'boundary': str(x+0.0000001)+';'+str(y+0.0000001)+';'+str(x +0.02)+';'+str(y +0.02),# '127.0248326;37.4818077;127.0455129;37.4967971', #
                     'pageSize': '100'
                 }
                 req = requests.get(url, headers=header, params=playload)
+                r = req.json()
                 results = list(req.json()['result']['site'])
                 for result in results:
                     yield result
