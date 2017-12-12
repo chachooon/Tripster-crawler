@@ -1,5 +1,5 @@
-from .models import ReqestData, NmapList, NmapContents
-from .serializer import ReqNmapSerializer,NmapListSerializer, NmapContentsSerializer
+from .models import ReqestData, NmapList#, NmapContents
+from .serializer import ReqNmapSerializer,NmapListSerializer#, NmapContentsSerializer
 from rest_framework import generics
 
 class ReqestDataView(generics.ListCreateAPIView):
@@ -10,8 +10,8 @@ class NmapListView(generics.ListCreateAPIView):
     queryset = NmapList.objects.all()
     serializer_class = NmapListSerializer
 
-class NmapContentsView(generics.ListCreateAPIView):
-    queryset = NmapContents.objects.all()
-    serializer_class = NmapContentsSerializer
+# class NmapContentsView(generics.ListCreateAPIView):
+#     queryset = NmapContents.objects.all()
+#     serializer_class = NmapContentsSerializer
 
 

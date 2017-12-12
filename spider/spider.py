@@ -1,4 +1,4 @@
-from .models import NmapList, NmapContents
+from .models import NmapList#, NmapContents
 from bs4 import BeautifulSoup
 import requests, json
 
@@ -24,35 +24,31 @@ class NmapListScrapable():
                 r = req.json()
                 results = list(req.json()['result']['site'])
                 for result in results:
-                    result = result
-                    NmapList.objects.create(
-                        nid = int(result['id'][1:]),
-                        name = result['name'],
-                        category = category,
-                        x = result['x'],
-                        y = result['y']
-                )
-
-                    # detail = NmapContentsScrapable()
-                    # detail.create(instance)
+                    id = int(result['id'][1:])
+                    find_id = NmapList.objects.filter(id=id).count()
+                    if find_id<1:
+                        con = NmapContentsScrapable()
+                        contents = con.request(id)['business']
+                        c = type(contents)
+                        NmapList.objects.create(
+                            id = id,
+                            name = result['name'],
+                            category = category,
+                            x = result['x'],
+                            y = result['y'],
+                            contents = contents
+                        )
         return NmapList.objects.all()
 
 class NmapContentsScrapable():
-    def request(self, instance):
+    def request(self, id):
         url = 'https://store.naver.com/restaurants/detail?'
         header = {}
         playload = {
-            'id': instance.nid
+            'id': id
         }
         req = requests.get(url, headers=header, params=playload)
         soup = BeautifulSoup(req.text, 'html.parser')
         soup_parse = soup.footer.next_sibling.string.split('window.PLACE_STATE=')[1]
         result = json.loads(soup_parse)
         return result
-
-    def create(self,instance):
-        result = self.request(instance)
-        NmapContents.objects.create(
-            cid = instance.cid,
-            contents = result
-        )

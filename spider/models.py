@@ -14,12 +14,13 @@ class ReqestData(Timestampable, models.Model):
     max = models.IntegerField()
 
 class NmapList(Timestampable, models.Model):
-    nid = models.IntegerField(null=True, blank=True)
+    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     category = models.CharField(max_length=100)
     x = models.DecimalField(max_digits=10, decimal_places=7)
     y = models.DecimalField(max_digits=10, decimal_places=7)
+    contents = JSONField(null=True)
 
-class NmapContents(Timestampable, models.Model):
-    cid = models.IntegerField(null=True, blank=True)
-    contents = JSONField()
+# class NmapContents(Timestampable, models.Model):
+#     cid = models.ForeignKey(NmapList, on_delete=models.CASCADE)
+#     contents = JSONField()
