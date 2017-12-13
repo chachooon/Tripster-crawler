@@ -9,7 +9,7 @@ class ReqNmapSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         scrapable = NmapListScrapable()
-        scrapable.request(**validated_data)
+        scrapable.request()
         return ReqestData.objects.create(**validated_data)
 
 
