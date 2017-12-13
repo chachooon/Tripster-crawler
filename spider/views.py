@@ -1,20 +1,17 @@
-from .models import NmapRaw ,ReqestHistory
-from .serializer import ReqNmapSerializer, NmapRawDataSerializer
+from .models import ReqestData, NmapList#, NmapContents
+from .serializer import ReqNmapSerializer,NmapListSerializer#, NmapContentsSerializer
 from rest_framework import generics
 
-class ReqestHistoryList(generics.ListCreateAPIView):
-    queryset = ReqestHistory.objects.all()
+class ReqestDataView(generics.ListCreateAPIView):
+    queryset = ReqestData.objects.all()
     serializer_class = ReqNmapSerializer
 
-class NmapRawDataList(generics.ListCreateAPIView):
-    queryset = NmapRaw.objects.all()
-    serializer_class = NmapRawDataSerializer
+class NmapListView(generics.ListCreateAPIView):
+    queryset = NmapList.objects.all()
+    serializer_class = NmapListSerializer
 
-
-
-# class NmapList(generics.ListCreateAPIView):
-#     queryset = NmapList.objects.all()
-#     serializer_class = NmapListScrapable
-
+# class NmapContentsView(generics.ListCreateAPIView):
+#     queryset = NmapContents.objects.all()
+#     serializer_class = NmapContentsSerializer
 
 
