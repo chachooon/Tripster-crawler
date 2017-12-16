@@ -2,47 +2,14 @@ from .models import NmapList, NmapBoundaryList #, NmapContents
 from bs4 import BeautifulSoup
 import requests, json, asyncio
 
-class test:
-    def __init__(self):
-        self.category = 'category'
-        self.x_min = 12500
-        self.x_max = 13100
-        self.x = self.x_min
-        self.y_min = 3300
-        self.y_max = 3900
-        self.y = self.y_min
-        self.y_pass = []
-
-
-    async def xiter(self):
-        for self.x in range(self.x_min, self.x_max):
-            if self.y in self.y_pass:
-                yield self.x += 20
-                self.y_pass.pop(y)
-            else:
-                yield self.x += 10
-
-    async def yiter(self):
-        self.x = await self.xiter()
-        for self.y in range(self.y_min, self.y_max):
-            boundary = str(round(self.x * 0.01,7))+';'+str(round(self.y * 0.01,7))+';'+ \
-                       str(round((self.x+20)* 0.01,7))+';'+str(round((self.y+20)* 0.01,7))
-            results = await self.request(boundary=boundary)
-            if results != 400:
-                yield results
-                y += 20
-                self.y_pass.append(y).append(y)
-                NmapBoundaryList.objects.create(boundary=boundary)
-            else:
-                yield results
-                y += 10
-
+class NmapContentsScrapable():
     async def request(self,**kwarg):
         url = "http://map.naver.com/search2/interestSpot.nhn?"
         header = {
-            'user-agent':'Mozilla/5.0'# +'(Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
+            'user-agent':'Mozilla/5.0'
+            # +'(Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
         }
-        category = "DINING"
+        category = kwarg['category']
         boundary = kwarg['boundary']
         playload = {
             'type': category,
@@ -59,14 +26,14 @@ class test:
                 return results
             else:
                 print(res)
-                return 0
+                return 400
         else:
             print(res)
-            return 0
+            return 400
 
-    async def create(self, results):
-        category = "DINING"
-        if results != 0:
+    async def create(self, **kwarg):
+        results = kwarg['results']
+        if results != 400:
             for result in results:
                 try:
                     id = int(result['id'][1:])
@@ -78,13 +45,50 @@ class test:
                         NmapList.objects.create(
                             id=id,
                             name=result['name'],
-                            category=category,
+                            category=kwarg['category'],
                             x=result['x'],
                             y=result['y'],
                             # contents = contents
                         )
-                except:
-                    pass
+                except: pass
+
+    async def iter(self):
+        category = 'category'
+        x_min = 12500
+        x_max = 13100
+        x = x_min
+        y_min = 3300
+        y_max = 3900
+        y = y_min
+        y_pass = []
+
+        for x in range(x_min, x_max):
+            if y in y_pass:
+                x += 20
+                y_pass.pop(y)
+            else:
+                x += 10
+
+            for y in range(y_min, y_max):
+                boundary = str(round(x * 0.01,7))+';'+str(round(y * 0.01,7))+';'+ \
+                           str(round((x+20)* 0.01,7))+';'+str(round((y+20)* 0.01,7))
+                results = await self.request(
+                    boundary=boundary,
+                    category=category
+                )
+
+                if results != 400:
+                    await self.create(
+                        results=results,
+                        category=category
+                    )
+                    y += 20
+                    self.y_pass.append(y).append(y)
+                    NmapBoundaryList.objects.create(boundary=boundary)
+                else:
+                    y += 10
+
+
 
 
 class NmapListSpider():
