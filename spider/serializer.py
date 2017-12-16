@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import ReqestData, NmapList#, NmapContents
-from .spider import NmapListScrapable
+from . import spider
 
 class ReqNmapSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,8 +8,7 @@ class ReqNmapSerializer(serializers.ModelSerializer):
         fields = ('x', 'y','max')
 
     def create(self, validated_data):
-        scrapable = NmapListScrapable()
-        scrapable.iter()
+        spider.start()
         return ReqestData.objects.create(**validated_data)
 
 
