@@ -21,7 +21,8 @@ class NmapList(Timestampable, models.Model):
     y = models.DecimalField(max_digits=10, decimal_places=7)
     contents = JSONField(null=True)
 
-# class NmapBoundaryList(Timestampable, models.Model):
+class NmapBoundaryList(Timestampable, models.Model):
+    boundary = models.CharField(max_length=100)
 
 # class NmapContents(Timestampable, models.Model):
 #     cid = models.ForeignKey(NmapList, on_delete=models.CASCADE)
