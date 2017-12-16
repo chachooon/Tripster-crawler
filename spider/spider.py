@@ -2,11 +2,9 @@ from .models import NmapList, NmapBoundaryList #, NmapContents
 from bs4 import BeautifulSoup
 import requests, json, asyncio
 
-class NmapListScrapable:
-    def __init__(self, category):
-        self.category = category
+class NmapListScrapable():
 
-    async def request(self,**kwarg):
+    def request(self,**kwarg):
         url = "http://map.naver.com/search2/interestSpot.nhn?"
         header = {
             'user-agent':'Mozilla/5.0'
@@ -34,7 +32,7 @@ class NmapListScrapable:
             print(res)
             return 400
 
-    async def create(self, **kwarg):
+    def create(self, **kwarg):
         results = kwarg['results']
         if results != 400:
             for result in results:
@@ -55,8 +53,8 @@ class NmapListScrapable:
                         )
                 except: pass
 
-    async def __aenter__(self):
-        category = self.category
+    def iter(self):
+        category = 'DINING'
         x_min = 12500
         x_max = 13100
         x = x_min
@@ -64,8 +62,6 @@ class NmapListScrapable:
         y_max = 3900
         y = y_min
         y_pass = []
-
-        cnt = 0
 
         for x in range(x_min, x_max):
             if y in y_pass:
@@ -77,36 +73,23 @@ class NmapListScrapable:
             for y in range(y_min, y_max):
                 boundary = str(round(x * 0.01,7))+';'+str(round(y * 0.01,7))+';'+ \
                            str(round((x+20)* 0.01,7))+';'+str(round((y+20)* 0.01,7))
-                results = await self.request(
+                results = self.request(
                     boundary=boundary,
                     category=category
                 )
 
                 if results != 400:
-                    await self.create(
+                    self.create(
                         results=results,
                         category=category
                     )
-                    await asyncio.sleep(1.0)
-                    ++cnt
                     y += 20
-                    self.y_pass.append(y).append(y)
+                    y_pass.append(y)
+                    y_pass.append(y)
                     NmapBoundaryList.objects.create(boundary=boundary)
                 else:
                     y += 10
-        return cnt
 
-    async def __aexit__(self, exc_type, exc_value, traceback):
-        pass
-
-async def main():
-    async with NmapListScrapable('DINING') as result:
-        print(result)
-
-def start():
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
-    loop.close
 
 
 # class NmapContentsScrapable():
