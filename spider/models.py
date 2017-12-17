@@ -23,6 +23,7 @@ class NmapList(Timestampable, models.Model):
 
 class NmapBoundaryList(Timestampable, models.Model):
     boundary = models.CharField(max_length=100)
+    cnt = models.IntegerField()
 
 # class NmapContents(Timestampable, models.Model):
 #     cid = models.ForeignKey(NmapList, on_delete=models.CASCADE)
