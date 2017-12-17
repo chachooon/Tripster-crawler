@@ -47,7 +47,7 @@ class NmapScrapable():
         for result in results:
             try:
                 id = int(result['id'][1:])
-                nmaplist, created = NmapList.objects.update_or_create(
+                obj, created = NmapList.objects.get_or_create(
                     id=id,
                     name=result['name'],
                     category=category,
@@ -61,11 +61,13 @@ class NmapScrapable():
                         'y': result['y']
                     }
                 )
-                if created:
-                    cnt += 1
-                    contents = self.request_contents(id)['business']
-                    nmaplist.update(contents = contents)
-
+                if obj.contents:
+                    pass
+                else:
+                   cnt += 1
+                   contents = self.request_contents(id)['business']
+                   obj.contents = contents
+                   obj.save()
             except: pass
 
         NmapBoundaryList.objects.update_or_create(
@@ -93,26 +95,35 @@ class NmapScrapable():
             for y in range(y_min, y_max):
                 boundary = str(round(x * 0.1,7))+';'+str(round(y * 0.1,7))+';'+ \
                            str(round((x+1)* 0.1,7))+';'+str(round((y+1)* 0.1,7))
-                results = self.request(boundary=boundary, category=category)
-                if results != 1:
-                    xx = x * 10
-                    yy = y * 10
-                    print('re request '+str(xx))
-                    for xx in range(xx,xx+10):
-                        for yy in range(yy,yy+10):
-                            boundary = str(round(xx * 0.01, 7)) + ';' + str(round(yy * 0.01, 7)) + ';' + \
-                                       str(round((xx+1) * 0.01, 7)) + ';' + str(round((yy+1) * 0.01, 7))
-                            result = self.request(boundary=boundary, category=category)
-                            if result != 1:
-                                xxx = xx * 10
-                                yyy = yy * 10
-                                print('re request ' + str(xxx))
-                                for xxx in range(xxx, xxx+10):
-                                    for yyy in range(yyy,yyy+10):
-                                        boundary = str(round(xxx * 0.001, 7)) + ';' + str(round(yyy * 0.001, 7)) + ';' + \
-                                                   str(round((xxx + 1) * 0.001, 7)) + ';' + str(round((yyy + 1) * 0.001, 7))
-                                        self.request(boundary=boundary, category=category)
-                #else: #print('y:' + str(y))
+                if NmapBoundaryList.objects.filter(boundary=boundary,category=category):
+                    pass
+                else:
+                    results = self.request(boundary=boundary, category=category)
+                    if results != 1:
+                        xx = x * 10
+                        yy = y * 10
+                        print('re request '+str(xx))
+                        for xx in range(xx,xx+10):
+                            for yy in range(yy,yy+10):
+                                boundary = str(round(xx * 0.01, 7)) + ';' + str(round(yy * 0.01, 7)) + ';' + \
+                                           str(round((xx+1) * 0.01, 7)) + ';' + str(round((yy+1) * 0.01, 7))
+                                if NmapBoundaryList.objects.filter(boundary=boundary, category=category):
+                                    pass
+                                else:
+                                    result = self.request(boundary=boundary, category=category)
+                                    if result != 1:
+                                        xxx = xx * 10
+                                        yyy = yy * 10
+                                        print('re request ' + str(xxx))
+                                        for xxx in range(xxx, xxx+10):
+                                            for yyy in range(yyy,yyy+10):
+                                                boundary = str(round(xxx * 0.001, 7)) + ';' + str(round(yyy * 0.001, 7)) + ';' + \
+                                                           str(round((xxx + 1) * 0.001, 7)) + ';' + str(round((yyy + 1) * 0.001, 7))
+                                                if NmapBoundaryList.objects.filter(boundary=boundary, category=category):
+                                                    pass
+                                                else:
+                                                    self.request(boundary=boundary, category=category)
+
 
 
 
