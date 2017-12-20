@@ -4,11 +4,11 @@ import requests, json, asyncio
 
 class NmapScrapable():
     header = {
-        # 'user-Agent':'Opera/9.80 (Windows NT 6.1; U; ko) Presto/2.6.30 Version/10.62'
+        'user-Agent':'Opera/9.80 (Windows NT 6.1; U; ko) Presto/2.6.30 Version/10.62'
         # 'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
         # 'user-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
         # 'user-agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; ko-KR) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0.2 Safari/533.18.5'
-        'user-agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; ko-KR) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7'
+        # 'user-agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; ko-KR) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7'
     }
 
     def request(self,**kwarg):
@@ -39,9 +39,15 @@ class NmapScrapable():
         playload = {'id': id }
         req = requests.get(url, headers=self.header, params=playload)
         soup = BeautifulSoup(req.text, 'html.parser')
-        soup_parse = soup.footer.next_sibling.string.split('window.PLACE_STATE=')[1]
-        result = json.loads(soup_parse)
-        return result
+        try:
+            soup_parse = soup.footer.next_sibling.string.split('window.PLACE_STATE=')[1]
+            result = json.loads(soup_parse)
+            print("성공,성공성공성공성공성공성공성공성공성공")
+            return result
+        except:
+            print(soup)
+            return ""
+
 
     def iter(self):
         lists = NmapList.objects.all()
@@ -54,7 +60,7 @@ class NmapScrapable():
             else:
                 cnt += 1
                 print(list.id)
-                contents = self.request_contents(id)['business']
+                contents = self.request_contents(id)
                 list.contents = contents
                 list.save()
         print(cnt)
