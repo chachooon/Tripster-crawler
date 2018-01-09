@@ -1,5 +1,8 @@
 FROM ubuntu:16.04
 
+ENV PYTHONUNBUFFERED=0
+ENV PATH=${PYTHONUSERBASE}lib/python3.6/site-packages/bin:${PATH}
+
 RUN apt-get update \
     && apt-get install -y software-properties-common curl \
     && add-apt-repository ppa:jonathonf/python-3.6 \
@@ -9,17 +12,14 @@ RUN apt-get update \
     && apt-get install -y python3.6 \
     && curl -o /tmp/get-pip.py "https://bootstrap.pypa.io/get-pip.py" \
     && python3.6 /tmp/get-pip.py \
+    && apt-get -y install libpq-dev python-dev \
     && apt-get remove -y curl \
     && apt autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-ADD    ./manage.py            /app/
-ADD    ./requirements.txt     /app/
-RUN    pip install -r requirements.txt
+ADD    ./manage.py                    /app/
 
-ADD    ./tipster/        /app/tipster/
-
-EXPOSE 8000
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+ADD    compose/django/start-dev.sh       /start-dev.sh
+RUN    chmod +x /*.sh

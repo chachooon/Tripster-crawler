@@ -1,6 +1,7 @@
 .DS_Store
 .idea/
 __pycache__
-/spider/migrations/0*
-settings.py
+migrations/0*
 /tipster/settings/development.py
+
+!/README.md
