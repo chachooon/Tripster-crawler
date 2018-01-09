@@ -19,7 +19,7 @@ ADD    ./manage.py            /app/
 ADD    ./requirements.txt     /app/
 RUN    pip install -r requirements.txt
 
-ADD    ./tipstser/        /app/tipster/
-RUN    ./manage.py collectstatic --noinput
+ADD    ./tipster/        /app/tipster/
 
-CMD ["gunicorn", "--workers=3", "--bind", "0:8000", "djangosample.wsgi"]
+EXPOSE 8000
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

@@ -1,6 +1,6 @@
 from .models import NmapList, NmapBoundaryList #, NmapContents
 from bs4 import BeautifulSoup
-import requests, json, asyncio
+import requests, json
 
 class NmapScrapable():
     header = {

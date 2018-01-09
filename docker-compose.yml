@@ -6,7 +6,7 @@ services:
       context: .
     ports:
       - "8000:8000"
-    command: /start-dev.sh
+#    command: /start-dev.sh
     volumes:
       - ./manage.py:/app/manage.py
       - ./requirements.txt:/app/requirements.txt
