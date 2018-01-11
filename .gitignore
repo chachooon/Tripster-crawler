@@ -5,3 +5,4 @@ __pycache__
 /tipster/settings/development.py
 /spider/migrations/0*
 /contents/migrations/0*
+contents/apiKeyList.txt
